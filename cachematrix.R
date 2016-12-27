@@ -23,29 +23,18 @@ makeCacheMatrix <- function(x = matrix()) {
 }
 
 
-## cacheSolve use getinv(), get() for retrieving last inverse solution and the matrix.
-## A copy of the matrix is saved to globalEnv for later comparing if matrix has changed or not.
-## If the matrix is identical to last processed matrix (lastMatrix), cacheSolve will return
-## last inverse result, which was saved in the list object. Otherwise resolve() is called and
-## a inversed matrix is saved in the list object and subsequently returned.
-##
-## Should matrix is changed between two cacheSolve() runs, it will know and re-process resolve().
-## This is possible because lastMatrix is in globalEnv hence not subject to change of
-## makeCacheMatrix.
-
+## cacheSolve receive a list object. A matrix is passed to cacheSolve in this object and retrievable
+## by calling getinv().
 cacheSolve <- function(x, ...) {
-  ## Return a matrix that is the inverse of 'x'
-  ##First check to see if the matrix has changed or not
   m <- x$getinv()
-  ## message(paste("get() has class:", class(x$get()))), showing get() is for passing data
   data <- x$get()
-  ## Save a copy of last processed data for later comparing
-  lastMatrix <- data
-  if(!is.null(m) & identical(data,lastMatrix)) {
+  ## Return cached solution if avilable
+  if(!is.null(m)) {
     message("getting cached solution")
     return(m)
   }
   m <- solve(data, ...)
   x$setinv(m)
+  #### Return the inverse of 'x'
   m
 }
